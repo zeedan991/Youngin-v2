@@ -30,6 +30,12 @@ export function initCart() {
     if (closeCart) {
         closeCart.addEventListener('click', closeCartPanel);
     }
+
+    // Setup checkout button
+    const checkoutBtn = document.getElementById('checkout-btn');
+    if (checkoutBtn) {
+        checkoutBtn.addEventListener('click', initiateCheckout);
+    }
 }
 
 // Add item to cart
@@ -270,6 +276,128 @@ async function syncCartToFirebase() {
     }
 }
 
+
+
+// Initiate Checkout
+async function initiateCheckout() {
+    if (cart.items.length === 0) {
+        showCartNotification("Your cart is empty!");
+        return;
+    }
+
+    if (!auth.currentUser) {
+        showCartNotification("Please login to checkout.");
+        // Optional: Trigger login modal
+        if (window.openAuthModal) window.openAuthModal('login');
+        return;
+    }
+
+    const checkoutBtn = document.getElementById('checkout-btn');
+    const originalText = checkoutBtn.innerText;
+    checkoutBtn.innerText = "Processing...";
+    checkoutBtn.disabled = true;
+
+    try {
+        const amount = Math.round(cart.total * 100); // Convert to paise/cents
+
+        // 1. Create Order
+        // Note: Replace with your actual backend URL if not running locally/proxied correctly
+        // Using relative path assuming proxy or same domain, otherwise configure full URL
+        let API_URL = '';
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            API_URL = 'http://localhost:5000';
+        } else {
+            // For production/vercel, use the configured backend URL or relative path if proxied
+            // Assuming the backend is on a different domain (HF Space) and CORS is set up
+            API_URL = 'https://zeedan991-youngin-v2.hf.space';
+        }
+
+        const response = await fetch(`${API_URL}/create-order`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ amount: amount, currency: "USD" })
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to create order");
+        }
+
+        const orderData = await response.json();
+
+        // 2. Initialize Razorpay
+        const options = {
+            "key": "rzp_live_SEmh76ySIhxwPN",
+            "amount": orderData.amount,
+            "currency": orderData.currency,
+            "name": "Youngin",
+            "description": "Custom Clothing Order",
+            "image": "assets/logo.png",
+            "order_id": orderData.id,
+            "handler": async function (response) {
+                // 3. Verify Payment
+                try {
+                    const verifyResponse = await fetch(`${API_URL}/verify-payment`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            razorpay_order_id: response.razorpay_order_id,
+                            razorpay_payment_id: response.razorpay_payment_id,
+                            razorpay_signature: response.razorpay_signature
+                        })
+                    });
+
+                    const verifyData = await verifyResponse.json();
+
+                    if (verifyData.status === "success") {
+                        showCartNotification("Payment Successful! Order Placed.");
+                        clearCart();
+                        closeCartPanel();
+                    } else {
+                        showCartNotification("Payment Verification Failed.");
+                    }
+                } catch (error) {
+                    console.error("Verification Error:", error);
+                    showCartNotification("Payment verification error.");
+                }
+            },
+            "prefill": {
+                "name": auth.currentUser.displayName || "User",
+                "email": auth.currentUser.email,
+                "contact": ""
+            },
+            "theme": {
+                "color": "#6366f1"
+            },
+            "modal": {
+                "ondismiss": function () {
+                    checkoutBtn.innerText = originalText;
+                    checkoutBtn.disabled = false;
+                }
+            }
+        };
+
+        const rzp1 = new Razorpay(options);
+        rzp1.on('payment.failed', function (response) {
+            console.error(response.error);
+            showCartNotification("Payment Failed: " + response.error.description);
+            checkoutBtn.innerText = originalText;
+            checkoutBtn.disabled = false;
+        });
+
+        rzp1.open();
+
+    } catch (error) {
+        console.error("Checkout Error:", error);
+        showCartNotification("Checkout failed. Please try again.");
+        checkoutBtn.innerText = originalText;
+        checkoutBtn.disabled = false;
+    }
+}
+
 // Load cart from Firebase
 export async function loadCartFromFirebase() {
     if (!auth.currentUser) return;
@@ -316,5 +444,6 @@ window.cartModule = {
     removeFromCart,
     updateQuantity,
     clearCart,
-    getCart
+    getCart,
+    initiateCheckout
 };

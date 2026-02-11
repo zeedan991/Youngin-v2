@@ -12,6 +12,7 @@ import torch.nn.functional as F
 import os
 from dotenv import load_dotenv
 import logging
+import razorpay
 
 # Load environment variables
 load_dotenv()
@@ -23,6 +24,9 @@ logger = logging.getLogger(__name__)
 logger.info("🚀 Starting Youngin API Server...")
 
 app = Flask(__name__)
+
+# Initialize Razorpay Client
+razorpay_client = razorpay.Client(auth=(os.getenv("RAZORPAY_KEY_ID"), os.getenv("RAZORPAY_KEY_SECRET")))
 
 # Configure CORS
 # SECURITY NOTE: For production, replace "*" with your specific frontend domain
@@ -822,6 +826,59 @@ def chat_endpoint():
     except Exception as e:
         logger.error(f"Server Error in /chat: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
+
+# --- RAZORPAY PAYMENT ROUTES ---
+
+@app.route("/create-order", methods=["POST"])
+def create_order():
+    """Creates a Razorpay order"""
+    try:
+        data = request.json
+        amount = data.get("amount")  # Amount in paise
+        
+        if not amount:
+            return jsonify({"error": "Amount is required"}), 400
+            
+        order_data = {
+            "amount": amount,
+            "currency": "USD", # Changed to USD as per typical international usage, or keep INR if local
+            "payment_capture": 1
+        }
+        
+        # If currency is provided, use it
+        if "currency" in data:
+            order_data["currency"] = data["currency"]
+
+        order = razorpay_client.order.create(data=order_data)
+        return jsonify(order)
+        
+    except Exception as e:
+        logger.error(f"Error creating order: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/verify-payment", methods=["POST"])
+def verify_payment():
+    """Verifies Razorpay payment signature"""
+    try:
+        data = request.json
+        
+        # Razorpay expects these keys for verification
+        params_dict = {
+            "razorpay_order_id": data.get("razorpay_order_id"),
+            "razorpay_payment_id": data.get("razorpay_payment_id"),
+            "razorpay_signature": data.get("razorpay_signature")
+        }
+        
+        # verify_payment_signature raises an error if signature is invalid
+        razorpay_client.utility.verify_payment_signature(params_dict)
+        
+        return jsonify({"status": "success", "message": "Payment verified"})
+        
+    except razorpay.errors.SignatureVerificationError:
+        return jsonify({"error": "Payment verification failed"}), 400
+    except Exception as e:
+        logger.error(f"Error verifying payment: {e}")
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
