@@ -113,7 +113,7 @@ class ChatBot {
     addLoadingIndicator() {
         const id = 'loading-' + Date.now();
         const msgDiv = document.createElement('div');
-        msgDiv.className = 'message bot';
+        msgDiv.className = 'message bot typing';
         msgDiv.id = id;
 
         const avatar = document.createElement('div');
@@ -121,8 +121,8 @@ class ChatBot {
         avatar.textContent = 'AI';
 
         const content = document.createElement('div');
-        content.className = 'msg-content';
-        content.textContent = '...'; // Simple typing indicator
+        content.className = 'msg-content typing-indicator';
+        content.innerHTML = '<span class="dot"></span><span class="dot"></span><span class="dot"></span>';
 
         msgDiv.appendChild(avatar);
         msgDiv.appendChild(content);
