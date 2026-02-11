@@ -1,119 +1,80 @@
-# YOUNGIN.v2
+# YOUNGIN.v2 - Frontend
 
-![Youngin Banner](https://capsule-render.vercel.app/api?type=waving&color=gradient&height=300&section=header&text=YOUNGIN&fontSize=90&animation=fadeIn&fontAlignY=38&desc=Design%20Your%20Legacy&descAlignY=51&descAlign=62)
+The premium frontend for YOUNGIN, a next-gen custom clothing design platform. Built with vanilla JavaScript, HTML5, and CSS3 for maximum performance and design flexibility.
 
-<div align="center">
+## 🚀 Features
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
-[![Flask](https://img.shields.io/badge/flask-%23000.svg?style=flat&logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
-[![MediaPipe](https://img.shields.io/badge/MediaPipe-Solutions-blueviolet)](https://google.github.io/mediapipe/)
-[![Firebase](https://img.shields.io/badge/firebase-%23039BE5.svg?style=flat&logo=firebase)](https://firebase.google.com/)
-[![Vercel](https://img.shields.io/badge/vercel-%23000000.svg?style=flat&logo=vercel&logoColor=white)](https://vercel.com/)
-[![Hugging Face](https://img.shields.io/badge/%F0%9F%A4%97-Hugging%20Face-orange)](https://huggingface.co/)
+- **AI Body Sizing**: Dual-photo measurement system with Ramanujan's formula for high accuracy.
+- **3D Customizer**: Interactive T-shirt design tool using Three.js (planned).
+- **Virtual Try-On**: Augmented reality fitting room.
+- **AI Chatbot**: Gemini-powered fashion assistant for style advice and support.
+- **Local Tailor Hub**: Connect with premium tailors in your area.
+- **Rich & Rare**: Exclusive luxury marketplace with VIP access.
 
-**The world's first AI-powered, hyper-personalized custom clothing ecosystem.**
+## 🛠️ Tech Stack
 
-[View Demo](https://youngin-inky.vercel.app/) • [Report Bug](https://github.com/zeedan/youngin/issues) • [Request Feature](https://github.com/zeedan/youngin/issues)
+- **Core**: HTML5, CSS3, JavaScript (ES6+)
+- **Styling**: Custom CSS variables, Glassmorphism design system
+- **State Management**: Specialized modules (`cart.js`, `profile.js`, `firebase_config.js`)
+- **Backend Integration**: Proxied requests to Python/Flask backend via Vercel
+- **Authentication**: Firebase Auth (Google & Email/Password)
+- **Database**: Firebase Firestore
 
-</div>
+## 📂 Project Structure
 
----
-
-## 🚀 Mission Statement
-
-**Youngin** is not just a clothing brand; it's a technological revolution in fashion. We bridge the gap between digital design and physical craftsmanship using state-of-the-art Computer Vision and Generative AI. Our mission is to democratize bespoke tailoring, making perfectly fitted, custom-designed apparel accessible to everyone, everywhere.
-
-## ✨ Key Features
-
-### 🧠 AI Body Sizing (Proprietary Tech)
-Leveraging **MediaPipe Holistic** and **MiDaS Depth Estimation**, our proprietary algorithm extracts precise body measurements from just two photos (Front & Side) with **98% accuracy**.
-- **Real-time Segmentation**: Filters out background noise for precise contour detection.
-- **Depth Analysis**: Calculates true circumference using depth maps, not just 2D width.
-- **Smart Correction**: Adaptive algorithms adjust for clothing thickness and posture.
-
-### 🎨 Custom Design Studio
-An immersive, browser-based design suite powered by **Fabric.js**.
-- **Drag & Drop Interface**: Intuitive tools for non-designers.
-- **Real-time Preview**: See your design on realistic 3D garment models.
-- **Pro Tools**: Layer management, custom text, and asset uploads.
-
-### 🤖 Gemini AI Stylist
-Integrated **Google Gemini Pro** assistant for real-time fashion advice.
-- **Style Consultation**: Get outfit recommendations based on your body type.
-- **Trend Analysis**: Ask about current fashion trends.
-- **Platform Support**: Instant help with sizing and design tools.
-
-### 🌍 Local Tailor Hub & Marketplace
-Connecting the digital to the physical.
-- **Tailor Discovery**: Find top-rated local artisans to stitch your designs.
-- **Global Marketplace**: Buy and sell unique custom designs.
-- **Gamified Loyalty**: Earn XP, badges, and exclusive rewards (Rolex, LV) for engagement.
-
----
-
-## 🏗️ Architecture
-
-High-level system overview of the Youngin ecosystem.
-
-```mermaid
-graph TD
-    Client["Client (Browser)"]
-    CDN["Vercel CDN"]
-    Auth["Firebase Auth"]
-    DB["Firestore DB"]
-
-    Client -->|Static Assets| CDN
-    Client -->|User Authenticated| Auth
-    Client -->|Data Sync| DB
+```
+Youngin.v2/
+├── modules/                 # Functional modules
+│   ├── ai_sizing.js        # AI Measurement logic
+│   ├── api_service.js      # Backend API communication
+│   ├── cart.js             # Shopping cart management
+│   ├── chatbot.js          # AI Chatbot interface
+│   ├── custom_design.js    # 3D/Canvas design tool
+│   ├── firebase_config.js  # Auth & DB configuration
+│   ├── marketplace.js      # Product listing & filtering
+│   ├── profile.js          # User profile & order history
+│   └── social_local.js     # Tailor hub & Luxury market
+├── assets/                 # Images and icons
+├── index.html              # Main entry point
+├── script.js               # Global app controller & router
+├── style.css               # Global styles & design system
+└── vercel.json             # Deployment configuration
 ```
 
----
+## 🔧 Setup & Development
 
-## 🛠️ Technology Stack
-
-### **Frontend (Vercel)**
-- **Core**: Vanilla JavaScript (ES6 Modules) for performance and zero-bloat.
-- **Design**: CSS3 Glassmorphism, Responsive Grid, Custom Animations.
-- **Graphics**: Fabric.js HTML5 Canvas Library.
-- **Auth/Backend**: Google Firebase (Authentication, Firestore).
-
----
-
-## ⚡ Getting Started
-
-### Prerequisites
-- Node.js 16+
-- Firebase Project
-
-### Installation
-
-1. **Clone the Repository**
+1. **Install Dependencies** (optional, for local server):
    ```bash
-   git clone https://github.com/zeedan/youngin.git
-   cd youngin
+   npm install -g live-server
    ```
 
-2. **Frontend Setup**
-   Configure your Firebase credentials in `modules/firebase_config.js`.
+2. **Run Locally**:
    ```bash
-   # Run with a simple HTTP server
-   npx serve .
+   live-server
    ```
 
+3. **Backend Connection**:
+   - The frontend communicates with the backend via `/api/*` routes.
+   - locally, ensure your `vercel.json` rewrites or local proxy is set up.
+   - Production points to: `https://zedaan-youngin-backend-v2.hf.space`
+
+## 📦 Deployment
+
+This project is configured for **Vercel**.
+
+1. **Push to GitHub**:
+   ```bash
+   git push origin master
+   ```
+2. **Vercel** will automatically detect the commit and deploy.
+3. **Environment**: Ensure Firebase config is set up in `modules/firebase_config.js`.
+
+## 🎨 Design System
+
+- **Primary Color**: `#70e1f5` to `#ffd194` (Sunset Gradient)
+- **Dark Mode**: Deep Blue/Black backgrounds with glassmorphism overlays
+- **Typography**: 'Outfit' (Headings), 'Inter' (Body)
+
 ---
 
-## 🤝 Contributors
-
-**Zeedan** - Lead Developer & Architect
-
----
-
-## 📄 License
-
-Distributed under the MIT License. See `LICENSE` for more information.
-
-<div align="center">
-  <br />
-  <p>Built with ❤️ and ☕ by the Youngin Team. <b>Design Your Legacy.</b></p>
-</div>
+&copy; 2024 YOUNGIN. All rights reserved.
