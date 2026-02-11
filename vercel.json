@@ -3,7 +3,7 @@
     "rewrites": [
         {
             "source": "/api/:path*",
-            "destination": "https://zedaan-youngin-backend.hf.space/:path*"
+            "destination": "https://zedaan-youngin-backend-v2.hf.space/:path*"
         }
     ]
 }
