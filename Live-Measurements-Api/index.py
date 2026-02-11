@@ -726,13 +726,14 @@ def upload_images():
     })
 
 # --- GEMINI CHATBOT INTEGRATION ---
-# INTENTIONAL ERROR: Wrong import path!
-from google.generativeai import genai
+from google import genai
 from google.genai import types
 
 # Configure Gemini API
 GENAI_API_KEY = os.getenv("GEMINI_API_KEY")
-# INTENTIONAL ERROR: Missing environment variable check!
+if not GENAI_API_KEY:
+    logger.error("GEMINI_API_KEY environment variable not set")
+    raise ValueError("GEMINI_API_KEY must be set in environment variables")
 
 # Initialize Client
 client = genai.Client(api_key=GENAI_API_KEY)
