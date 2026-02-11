@@ -301,16 +301,22 @@ async function initiateCheckout() {
         const amount = Math.round(cart.total * 100); // Convert to paise/cents
 
         // 1. Create Order
-        // Note: Replace with your actual backend URL if not running locally/proxied correctly
-        // Using relative path assuming proxy or same domain, otherwise configure full URL
+        // Dynamic API URL Construction
         let API_URL = '';
-        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        const hostname = window.location.hostname;
+
+        if (hostname === 'localhost' || hostname === '127.0.0.1') {
             API_URL = 'http://localhost:5000';
+        } else if (hostname.includes('vercel.app')) {
+            // If on Vercel, use the deployed HF backend
+            API_URL = 'https://zeedan991-youngin-v2.hf.space';
         } else {
-            // For production/vercel, use the configured backend URL or relative path if proxied
-            // Assuming the backend is on a different domain (HF Space) and CORS is set up
+            // Fallback or same-domain (if serving both)
+            // Try to use relative path if we are on the backend domain, otherwise custom
             API_URL = 'https://zeedan991-youngin-v2.hf.space';
         }
+
+        console.log("Using API URL:", API_URL);
 
         const response = await fetch(`${API_URL}/create-order`, {
             method: "POST",
@@ -321,7 +327,9 @@ async function initiateCheckout() {
         });
 
         if (!response.ok) {
-            throw new Error("Failed to create order");
+            const errText = await response.text();
+            console.error("Order Creation Failed:", errText);
+            throw new Error(`Failed to create order: ${response.status} ${response.statusText} - ${errText}`);
         }
 
         const orderData = await response.json();

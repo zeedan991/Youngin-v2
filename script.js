@@ -117,19 +117,30 @@ class App {
                 this.state.user.name = user.displayName || user.email.split('@')[0] || "Designer";
                 this.state.user.email = user.email;
 
-                // 2. Fetch Full Profile from Firestore (Async)
-                const profile = await getUserProfile(user.uid);
+                // 2. Fetch Full Profile from Firestore (Async with Timeout)
+                try {
+                    // Create a timeout promise
+                    const timeout = new Promise((_, reject) =>
+                        setTimeout(() => reject(new Error("Profile fetch timeout")), 5000)
+                    );
 
-                if (profile) {
-                    // Update state with DB data (merging carefully)
-                    this.state.user = {
-                        ...this.state.user, // Keep basics
-                        ...profile,         // Override with DB data
-                        name: profile.displayName || this.state.user.name // Prefer DB name
-                    };
-                } else {
-                    // Optional: Auto-create if missing? 
-                    // For now, we rely on the Signup flow to create it.
+                    // Race between fetch and timeout
+                    const profile = await Promise.race([
+                        getUserProfile(user.uid),
+                        timeout
+                    ]);
+
+                    if (profile) {
+                        // Update state with DB data (merging carefully)
+                        this.state.user = {
+                            ...this.state.user, // Keep basics
+                            ...profile,         // Override with DB data
+                            name: profile.displayName || this.state.user.name // Prefer DB name
+                        };
+                    }
+                } catch (error) {
+                    console.warn("Profile load incomplete or timed out, using basic auth data:", error);
+                    // Use basic auth data as fallback so user isn't stuck
                 }
 
                 if (!this.state.user.xp) this.state.user.xp = 100;

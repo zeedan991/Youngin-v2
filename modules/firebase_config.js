@@ -43,6 +43,17 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+// Enable Local Persistence
+import { setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
+
+setPersistence(auth, browserLocalPersistence)
+    .then(() => {
+        // Persistence set
+    })
+    .catch((error) => {
+        console.error("Auth Persistence Error:", error);
+    });
+
 export {
     auth,
     db,
