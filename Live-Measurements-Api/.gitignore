@@ -3,3 +3,8 @@ __pycache__/
 *.pyc
 .python-version
 render.yaml
+*.jpeg
+*.jpg
+*.png
+*.gif
+*.bmp
