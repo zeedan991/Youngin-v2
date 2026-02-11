@@ -18,6 +18,11 @@ export function initAiSizing() {
             btn.disabled = true;
 
             try {
+                // Check if camera is supported
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                    throw new Error("Camera API not supported on this device");
+                }
+
                 // Simulate camera capture (would be real in prod)
                 const mockImage = "data:image/jpeg;base64,.....";
 
@@ -25,11 +30,12 @@ export function initAiSizing() {
 
                 if (measurements) {
                     displayResults(measurements);
+                    btn.innerText = "Scan Complete";
                 }
             } catch (error) {
                 console.error("Scan failed", error);
-                alert("Scan failed. Please try again.");
-                btn.innerText = "Upload Photo";
+                alert("Error: " + (error.message || "Scan failed. Please try again."));
+                btn.innerText = "Retry Scan";
                 btn.disabled = false;
             }
         };
