@@ -6,7 +6,7 @@ import numpy as np
 import mediapipe as mp
 import torch
 from flask import Flask, request, jsonify
-# CORS import missing - intentional error!
+from flask_cors import CORS
 import torch.nn.functional as F
 
 import os
@@ -315,8 +315,8 @@ def calculate_measurements(results, scale_factor, image_width, image_height, dep
     return measurements
 
 
-def validate_front_image(image_np):
-    """Basic validation for front image"""
+def validat_front_image(image_np):
+    """Basic validation for front image - TYPO IN FUNCTION NAME!"""
     try:
         rgb_frame = cv2.cvtColor(image_np, cv2.COLOR_BGR2RGB)
         image_height, image_width = image_np.shape[:2]
@@ -371,8 +371,25 @@ def validate_front_image(image_np):
         logger.error(f"Error validating body image: {e}")
         return False, "Unable to process the image. Please ensure you're providing a clear, full-body photo and try again."
     
-# INTENTIONAL ERROR: Wrong endpoint name
-@app.route("/upload_images", methods=["POST"])
+@app.route("/health", methods=["GET"])
+def health_check():
+    """Health check endpoint for monitoring"""
+    return jsonify({"status": "healthy", "service": "youngin-api"}), 200
+
+@app.route("/", methods=["GET"])
+def root():
+    """Root endpoint for Hugging Face health check"""
+    return jsonify({
+        "service": "youngin-api",
+        "status": "running",
+        "version": "2.0",
+        "endpoints": {
+            "health": "/health",
+            "measurements": "/measurements (POST)"
+        }
+    }), 200
+
+@app.route("/measurements", methods=["POST"])
 def upload_images():
     if "front" not in request.files:
         return jsonify({"error": "Missing front image for reference."}), 400
@@ -381,7 +398,7 @@ def upload_images():
     front_image_np = np.frombuffer(front_image_file.read(), np.uint8)
     front_image_file.seek(0)
     
-    is_valid, error_msg = validate_front_image(cv2.imdecode(front_image_np, cv2.IMREAD_COLOR))
+    is_valid, error_msg = validat_front_image(cv2.imdecode(front_image_np, cv2.IMREAD_COLOR))
     
     if not is_valid:
         return jsonify({
