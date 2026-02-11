@@ -28,7 +28,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyBaQZ1xGHxKecQBDKY1e2a8gV6B8xhxu5Y",
+    apiKey: "YOUR_API_KEY_HERE", // Replaced for security
     authDomain: "youngin-fb727.firebaseapp.com",
     projectId: "youngin-fb727",
     storageBucket: "youngin-fb727.firebasestorage.app",
