@@ -7,7 +7,7 @@
 // For local development, set your Firebase config here
 // For production, this will be replaced by build-time environment variables
 export const firebaseConfig = {
-    apiKey: "AIzaSyByfQ2r8O7WsC29mnU_g9aEbQkuVAA-rPI",
+    apiKey: "AIzaSyBaQZ1xGHxKecQBDKY1e2a8gV6B8xhxu5Y",
     authDomain: "youngin-fb727.firebaseapp.com",
     projectId: "youngin-fb727",
     storageBucket: "youngin-fb727.firebasestorage.app",
