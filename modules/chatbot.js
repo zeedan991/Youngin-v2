@@ -74,7 +74,7 @@ class ChatBot {
             this.removeMessage(loadingId);
 
             if (!response.ok) {
-                throw new Error("Server Error")
+                throw new Error("Server Error");
             }
 
             const data = await response.json();
@@ -145,3 +145,5 @@ class ChatBot {
 // Export initialization function
 export function initChatbot() {
     return new ChatBot();
+}
+
