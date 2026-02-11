@@ -7,7 +7,7 @@ export function initLocalHub() {
     const grid = document.getElementById('tailor-grid');
     if (!grid) return;
 
-    // Premium Tailors with detailed profiles - 9 TAILORS
+    // Premium Tailors with detailed profiles - 9 TAILORs
     const tailors = [
         {
             id: 1,
