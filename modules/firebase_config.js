@@ -27,7 +27,15 @@ import {
     getDocs
 } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
 
-import { firebaseConfig } from './firebase_env.js';
+const firebaseConfig = {
+    apiKey: "AIzaSyBaQZ1xGHxKecQBDKY1e2a8gV6B8xhxu5Y",
+    authDomain: "youngin-fb727.firebaseapp.com",
+    projectId: "youngin-fb727",
+    storageBucket: "youngin-fb727.firebasestorage.app",
+    messagingSenderId: "17128404672",
+    appId: "1:17128404672:web:2de20021f2830faa87df25",
+    measurementId: "G-PSNCJB9072"
+};
 
 
 // Initialize Firebase
